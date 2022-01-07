@@ -7,9 +7,13 @@ import random
 from dotenv import load_dotenv
 
 load_dotenv()
+
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 GEN_CHANNEL = os.getenv('DISCORD_GEN_CH')
+
+print("Value of ENV: ", TOKEN )
+print("Value of ENV: ", GUILD )
 
 client = discord.Client()
 
@@ -90,6 +94,16 @@ async def on_message(message):
         )
     ]
 
+    help_messages = [
+        'HELP ME',
+        (
+            'I\'VE FALLEN AND I CAN\'T GET UP!'
+        ),
+        (
+            'I NEED HEALING'
+        )
+    ]
+
     no_hard_rs = [
         'NO HARD R\'s PAL',
         (
@@ -105,6 +119,9 @@ async def on_message(message):
     print(str)
     if 'pog' in message.content.lower():
         response = random.choice(no_pog_warning)
+        await message.channel.send(response)
+    if '$help' == message.content.lower():
+        response =random.choice(help_messages)
         await message.channel.send(response)
 
 

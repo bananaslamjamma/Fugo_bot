@@ -2,13 +2,19 @@ import requests
 
 # testing out the MAL api for use in personal discord project
 
-r=requests.get("https://api.myanimelist.net/v2/anime/10357?fields=rank,mean,alternative_titles", headers={"X-MAL-CLIENT-ID": "499fee48172343e29aa9cf2578e03770"})
-print(r)
 
-data = r.json()
+def get_mal():
+    response = requests.get("https://api.myanimelist.net/v2/anime/10357?fields=rank,mean,alternative_titles", headers={"X-MAL-CLIENT-ID": "499fee48172343e29aa9cf2578e03770"})
+    print(response)
 
-id = data['id']
-title = data['title']
-id = data['title']
+    data = response.json()
 
-print(id)
+    id = data['id']
+    title = data['title']
+
+    print(title)
+    print(id)
+    return(title)
+
+
+get_mal()

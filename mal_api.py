@@ -69,9 +69,10 @@ def get_anime(anime_name):
             resp_dict = json.loads(json_str)
             title = resp_dict.get('title')
             synopsis = resp_dict.get('synopsis')
-            print(title)
-            print(synopsis)
-            print(id)
+            #print(title)
+            #print(synopsis)
+            #print(id)
+            return title, synopsis, id
             
         else:
             print("cannot retrieve anime info")

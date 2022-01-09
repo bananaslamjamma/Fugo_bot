@@ -1,6 +1,7 @@
 # bot_source.py
 
 import os
+import re
 from mal_api import *
 
 import discord
@@ -18,7 +19,8 @@ print("Value of ENV: ", TOKEN )
 print("Value of ENV: ", GUILD )
 
 def hasBrackets(str):
-    return bool(re.search('.*\{.*\}.*'), str)
+    matched = re.match('{{2}.{1,}\}{2}', str)
+    return bool(matched)
 
 client = discord.Client()
 
@@ -100,9 +102,13 @@ async def on_message(message):
         print(text)
         response = text
         await message.channel.send(response)
-    if hasBrackets(message):
-        response = "has brackets"
-        await message.channel.send(response)
+    if hasBrackets(str):
+        anime_name = str.strip(" < > { }")
+        info = get_anime(anime_name)
+        #response = info
+        await message.channel.send(info[0])
+        await message.channel.send([info[1]])
+        await message.channel.send(info[2])
         
 
 

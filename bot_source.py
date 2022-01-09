@@ -17,6 +17,9 @@ GEN_CHANNEL = os.getenv('DISCORD_GEN_CH')
 print("Value of ENV: ", TOKEN )
 print("Value of ENV: ", GUILD )
 
+def hasBrackets(str):
+    return bool(re.search('.*\{.*\}.*'), str)
+
 client = discord.Client()
 
 
@@ -84,9 +87,6 @@ async def on_member_join(member):
 async def on_message(message):
     if message.author == client.user:
         return
-
-
-
     str = message.content
     print(str)
     if 'pog' in message.content.lower():
@@ -100,6 +100,10 @@ async def on_message(message):
         print(text)
         response = text
         await message.channel.send(response)
+    if hasBrackets(message):
+        response = "has brackets"
+        await message.channel.send(response)
+        
 
 
 # exception handling

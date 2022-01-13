@@ -30,7 +30,7 @@ def mal_embed(str, str2):
         name = str.strip(" < > { }")   
         info = get_mal_object(name, str2)
         #response = info
-        embedVar = discord.Embed(title=info[0], description = info[1], color = 0x00ff00, url = "https://myanimelist.net/anime/{}".format(info[2]))
+        embedVar = discord.Embed(title=info[0], description = info[1], color = 0x00ff00, url = "https://myanimelist.net/" + str2 + "/{}".format(info[2]))
         embedVar.add_field(name = "Start Date: ", value= info[4])
         embedVar.add_field(name = "End Date: ", value= info[5])
         embedVar.add_field(name = "Popularity: ", value= info[6])

@@ -8,11 +8,16 @@ import re
 CLIENT_AUTH = "X-MAL-CLIENT-ID"
 TOKEN = "499fee48172343e29aa9cf2578e03770"
 LIMIT = 10
+PATH_PARAMETERS = "id, title, main_picture, alternative_titles, start_date, end_date, synopsis, mean, rank, popularity, status,"
 
-def get_search(query):
+def get_search(query, type):
     try:
-        response = requests.get("""https://api.myanimelist.net/v2/anime?q={}&limit={}""".format(query, LIMIT),
+        if type == "anime":
+            response = requests.get("""https://api.myanimelist.net/v2/anime?q={}&limit={}""".format(query, LIMIT),
                                 headers={CLIENT_AUTH: TOKEN})
+        elif type == "manga":
+            response = requests.get("""https://api.myanimelist.net/v2/manga?q={}&limit={}""".format(query, LIMIT),
+                                headers={CLIENT_AUTH: TOKEN})           
         print(response.status_code)
         if response.status_code == 200:
             data = response.json()
@@ -21,9 +26,9 @@ def get_search(query):
             json_str = json.dumps(data)
             # load the json to a string
             resp_dict = json.loads(json_str)
-            anime_object = resp_dict['data']
+            mal_object = resp_dict['data']
             title_list = []
-            for x in anime_object:
+            for x in mal_object:
                 #append entries to list
                 title_list.append(x['node'].get('title'))
                 #print(x['node'].get('title'))                         
@@ -50,14 +55,22 @@ def get_search(query):
     except Exception as e:
         print(e)
         return
+    
 
 
-def get_anime(anime_name):
+            
+
+
+def get_mal_object(name, type):
     try:
-        id = get_search(anime_name)
-        URL = "https://api.myanimelist.net/v2/anime/{}?fields= id, title, main_picture, alternative_titles, start_date, end_date, synopsis, mean, rank, popularity".format(
-            id)
-    # """https: // api.myanimelist.net/v2/anime/{}?fields=id,title, main_picture, alternative_titles, start_date, end_date, synopsis, mean, rank, popularity, num_list_users, num_scoring_users, nsfw,created_at, updated_at, media_type"""
+        id = get_search(name, type)
+        if type == "anime":            
+             URL = "https://api.myanimelist.net/v2/anime/{}?fields= num_episodes, ".format(
+                 id) + PATH_PARAMETERS
+        elif type == "manga":
+             URL = "https://api.myanimelist.net/v2/manga/{}?fields= num_chapters, ".format(
+                 id) + PATH_PARAMETERS
+            
         response = requests.get(URL, headers={CLIENT_AUTH: TOKEN})
         if response.status_code == 200:
             print(response)
@@ -69,43 +82,24 @@ def get_anime(anime_name):
             resp_dict = json.loads(json_str)
             title = resp_dict.get('title')
             synopsis = resp_dict.get('synopsis')
-            #print(title)
-            #print(synopsis)
-            #print(id)
-            return title, synopsis, id
+            main_picture = resp_dict.get('main_picture')['medium']
+            start_date = resp_dict.get('start_date')
+            end_date = resp_dict.get('end_date')
+            popularity  = resp_dict.get('popularity')
+            rank = resp_dict.get('rank')
+            status = resp_dict.get('status')
+            
+            #determine type
+            if type == "manga":
+                num_of = resp_dict.get('num_chapters')            
+            elif type == "anime":
+                num_of = resp_dict.get('num_episodes')   
+                
+            return title, synopsis, id, main_picture, start_date, end_date, popularity, rank, status, num_of
             
         else:
-            print("cannot retrieve anime info")
+            print("cannot retrieve query info")
             return
     except Exception as e:
         print(e)
         return
-
-
-def get_mal():
-    response = requests.get("https://api.myanimelist.net/v2/anime/10357?fields=rank,mean,alternative_titles",
-                            headers={CLIENT_AUTH: TOKEN})
-    # print(response)
-
-    data = response.json()
-    #print(json.dumps(data, indent=4, sort_keys= True))
-
-    id = data['id']
-    title = data['title']
-
-    # print(title)
-    # print(id)
-    return(title)
-
-
-#get_mal()
-get_anime("Fate/Zero")
-
-msg = "{{guns}}"
-
-def hasBrackets(str):
-    matched = re.match('{{2}.{1,}\}{2}', str)
-    return bool(matched)
-
-print(msg)
-print(hasBrackets(msg))

@@ -18,9 +18,33 @@ GEN_CHANNEL = os.getenv('DISCORD_GEN_CH')
 print("Value of ENV: ", TOKEN )
 print("Value of ENV: ", GUILD )
 
-def hasBrackets(str):
+def isAnime_exp(str):
     matched = re.match('{{2}.{1,}\}{2}', str)
     return bool(matched)
+
+def isManga_exp(str):
+    matched = re.match('<{2}.{1,}>{2}', str)
+    return bool(matched)
+
+def mal_embed(str, str2):
+        name = str.strip(" < > { }")   
+        info = get_mal_object(name, str2)
+        #response = info
+        embedVar = discord.Embed(title=info[0], description = info[1], color = 0x00ff00, url = "https://myanimelist.net/anime/{}".format(info[2]))
+        embedVar.add_field(name = "Start Date: ", value= info[4])
+        embedVar.add_field(name = "End Date: ", value= info[5])
+        embedVar.add_field(name = "Popularity: ", value= info[6])
+        embedVar.add_field(name = "Rank: ", value= info[7])
+        if str2 == "anime":
+            embedVar.add_field(name = "Number of Episodes: ", value= info[9])
+        if str2 == "manga":
+            embedVar.add_field(name = "Number of Chapters: ", value= info[9])
+        embedVar.add_field(name = "Status: ", value= info[8])    
+        embedVar.set_image(url = info[3])
+        embedVar.set_footer(text = "{{anime}} <<manga>>")
+        return embedVar
+        
+    
 
 client = discord.Client()
 
@@ -97,18 +121,11 @@ async def on_message(message):
     if '$help' == message.content.lower():
         response =random.choice(help_messages)
         await message.channel.send(response)
-    if '$mal' == message.content.lower():
-        text = get_mal()
-        print(text)
-        response = text
-        await message.channel.send(response)
-    if hasBrackets(str):
-        anime_name = str.strip(" < > { }")
-        info = get_anime(anime_name)
-        #response = info
-        await message.channel.send(info[0])
-        await message.channel.send([info[1]])
-        await message.channel.send(info[2])
+    if isAnime_exp(str):
+        embedObject = mal_embed(str, "anime")
+    elif isManga_exp(str):
+        embedObject = mal_embed(str, "manga")
+    await message.channel.send(embed=embedObject)
         
 
 
